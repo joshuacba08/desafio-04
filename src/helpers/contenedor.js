@@ -6,7 +6,7 @@ class Contenedor {
     constructor(ruta) {
         this.ruta = ruta;
         this.productos = [];
-    }
+    };
 
     async getAll() {
 
@@ -17,19 +17,21 @@ class Contenedor {
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     async save(producto){
         try {
-            this.productos = this.getAll();
-            producto.id = this.productos.length;
+
+            this.productos = await this.getAll();
+            producto.id = this.productos.length + 1;
             this.productos.push(producto);
             await fs.promises.writeFile(this.ruta, JSON.stringify(this.productos));
             return producto.id;
         } catch (error) {
+            console.log(error);
             return null;
         }
-    }
+    };
 
     async getById(id) {
         try {
@@ -38,21 +40,40 @@ class Contenedor {
         } catch (error) {
             return null;
         }
-    }
+    };
 
     async deleteById(id){
         try {
-            const productos = await this.getAll();
-            const newArray = productos.filter( producto => producto.id !== id);
-            await fs.promises.writeFile(this.ruta, JSON.stringify(newArray));
+            if(this.productExist(id)){
+                const productos = await this.getAll();
+                const newArray = await productos.filter( producto => producto.id !== id);
+                await fs.promises.writeFile(this.ruta, JSON.stringify(newArray));
+                return true;
+            } else{
+                return false;
+            }
         } catch (error) {
             return null;
         }
-    }
+    };
+
+    async replaceById(id, newProduct){
+        try {
+            const productos = await this.getAll();
+            let index= productos.findIndex( el => el.id === id);
+            await productos.splice( index, 1, newProduct);
+            productos[index].id = id;
+            await fs.promises.writeFile(this.ruta, JSON.stringify(productos));
+            return true;
+        } catch (error) {
+            return null;
+        }
+    };
+
 
     async deleteAll() {
         await fs.promises.writeFile(this.ruta,"[]");
-    }
+    };
 
     async productRandom() {
 
@@ -60,14 +81,15 @@ class Contenedor {
         const idRandom =  (min, max) => Math.floor(Math.random() * (max - min)) + min;
         const productoRandom = await this.getById(idRandom(1,productos.length+1));
         return productoRandom;
-    }
+    };
 
-
+    async productExist(id) {
+        this.productos = await this.getAll();
+        return this.productos.some( product => product.id === id);
+    }   
 }
 
-module.exports = {
-    Contenedor,
-}
+module.exports = Contenedor;
 
 
 

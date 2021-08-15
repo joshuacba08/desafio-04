@@ -6,6 +6,7 @@ class Server {
     constructor(){
         this.app = express();
         this.port = process.env.PORT;
+        this.productsPath = '/api/products';
 
         //Middlewares
         this.middlewares();
@@ -19,6 +20,9 @@ class Server {
         //CORS
         this.app.use( cors() );
 
+        //Lectura y parseo del body
+        this.app.use( express.json() );
+
         //Directorio público
         this.app.use( express.static('public') );
 
@@ -26,7 +30,7 @@ class Server {
 
     routes() {
         
-        this.app.use('/api/products', require('../routes/products.routes'));
+        this.app.use( this.productsPath, require('../routes/products.routes'));
 
     }
 
