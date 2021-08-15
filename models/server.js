@@ -1,4 +1,5 @@
 const express = require('express');
+var cors = require('cors');
 
 class Server {
 
@@ -6,10 +7,26 @@ class Server {
         this.app = express();
         this.port = process.env.PORT;
 
+        //Middlewares
+        this.middlewares();
+
+        //Rutas de la app
         this.routes();
     }
 
+    middlewares() {
+
+        //CORS
+        this.app.use( cors() );
+
+        //Directorio público
+        this.app.use( express.static('public') );
+
+    }
+
     routes() {
+        
+        this.app.use('/api/products', require('../routes/products.routes'));
 
     }
 
