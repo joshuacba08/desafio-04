@@ -20,15 +20,12 @@ const productGetById = async (req, res) => {
 
 };
 
-const productsPost = async (req, res) => {
-
-    const body = req.body;
+const productsPost = async (req, res,) => {
 
     const newId= await contenedor.save(req.body);
 
     res.json({
         msg:'post API - Se guardó un nuevo producto',
-        body,
         newId,
     });
 };
