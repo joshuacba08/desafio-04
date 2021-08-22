@@ -20,14 +20,32 @@ const productGetById = async (req, res) => {
 
 };
 
-const productsPost = async (req, res,) => {
+const productsPost = async (req, res) => {
 
-    const newId= await contenedor.save(req.body);
+    // validacion
+    const errors = [];
+    const { title, price, thumbnail } = req.body;
 
-    res.json({
-        msg:'post API - Se guardó un nuevo producto',
-        newId,
-    });
+    if(title.trim() === ''){
+        errors.push({mensaje:'El nombre está vacío'});
+    };
+    
+    if(price.trim() === ''){
+        errors.push({mensaje:'El precio está vacío'});
+    };
+
+    if(thumbnail.trim() === ''){
+        errors.push({mensaje:'El thumbnail está vacío'});
+    };
+
+    if( errors.length > 0) {
+        res.redirect('/');
+        console.log('error')
+    } else {
+        //almacenar
+        const newId= await contenedor.save(req.body);
+        res.redirect('/');
+    }
 };
 
 const productsPut = async (req, res) => {
